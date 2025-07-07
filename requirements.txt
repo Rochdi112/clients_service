@@ -1,5 +1,0 @@
-fastapi
-sqlmodel
-uvicorn
-python-jose
-pydantic

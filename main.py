@@ -1,29 +1,20 @@
-# Entrée FastAPI
 from fastapi import FastAPI
-from config import settings
-from routes import client_routes, site_routes
 from fastapi.middleware.cors import CORSMiddleware
-from database import init_db
+from .routes import router
+from .models import SQLModel
+from .dependencies import engine
 
 app = FastAPI(title="Clients Service")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
-    allow_credentials=True,
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 @app.on_event("startup")
 def on_startup():
-    init_db()
+    SQLModel.metadata.create_all(bind=engine)
 
-@app.get("/health", tags=["health"])
-def health_check():
-    return {"status": "ok"}
-
-app.include_router(client_routes.router)
-app.include_router(site_routes.router)
-
-# ... Autres endpoints globaux ...
+app.include_router(router)
